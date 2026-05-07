@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MacCleaner — modernes UI mit Sidebar, 4 Hauptbereichen + 4 Tools."""
+"""Broomstick — modernes UI mit Sidebar, 4 Hauptbereichen + 4 Tools."""
 
 from __future__ import annotations
 
@@ -735,7 +735,7 @@ class CleanUpPage(ctk.CTkFrame):
     def do_cleanup(self):
         to_delete = [p for var, p, _ in self.detail_checks if var.get() and not is_protected(p)]
         if not to_delete:
-            messagebox.showinfo("MacCleaner", "Nichts ausgewählt.")
+            messagebox.showinfo("Broomstick", "Nichts ausgewählt.")
             return
         msg = f"{len(to_delete)} Einträge in den Papierkorb verschieben?"
         if not messagebox.askyesno("Bestätigen", msg):
@@ -1120,7 +1120,7 @@ class ManageFilesPage(ctk.CTkFrame):
     def do_delete(self):
         sel = self.tree.selection()
         if not sel:
-            messagebox.showinfo("MacCleaner", "Nichts ausgewählt.")
+            messagebox.showinfo("Broomstick", "Nichts ausgewählt.")
             return
         paths = [Path(s) for s in sel if not is_protected(Path(s))]
         if not messagebox.askyesno("Bestätigen",
@@ -1253,7 +1253,7 @@ class DuplicatesPage(ctk.CTkFrame):
     def do_delete(self):
         paths = [p for v, p in self.checks if v.get()]
         if not paths:
-            messagebox.showinfo("MacCleaner", "Nichts ausgewählt.")
+            messagebox.showinfo("Broomstick", "Nichts ausgewählt.")
             return
         if not messagebox.askyesno("Bestätigen",
                                      f"{len(paths)} Duplikate in den Papierkorb verschieben?"):
@@ -1530,7 +1530,7 @@ class ApplicationsPage(ctk.CTkFrame):
                     to_delete.append(p)
         to_delete = [p for p in to_delete if not is_protected(p)]
         if not to_delete:
-            messagebox.showinfo("MacCleaner", "Nichts ausgewählt.")
+            messagebox.showinfo("Broomstick", "Nichts ausgewählt.")
             return
         msg = f"{len(to_delete)} Eintrag/Einträge in den Papierkorb verschieben?\n\n"
         msg += "\n".join(f"• {p}" for p in to_delete[:8])
@@ -1678,7 +1678,7 @@ class BiggestFilesPage(ctk.CTkFrame):
     def do_delete(self):
         sel = self.tree.selection()
         if not sel:
-            messagebox.showinfo("MacCleaner", "Nichts ausgewählt.")
+            messagebox.showinfo("Broomstick", "Nichts ausgewählt.")
             return
         paths = [Path(s) for s in sel if not is_protected(Path(s))]
         if not messagebox.askyesno("Bestätigen",
@@ -1782,7 +1782,7 @@ class App(ctk.CTk):
         super().__init__()
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
-        self.title("MacCleaner Pro")
+        self.title("Broomstick")
         self.geometry("1180x780")
         self.minsize(1000, 660)
         self.configure(fg_color=C["bg"])
@@ -1804,7 +1804,7 @@ class App(ctk.CTk):
         logo.pack_propagate(False)
         make_icon(logo, "logo", size=28,
                    color=C["accent"], bg_color=C["sidebar"]).pack(side="left", padx=(0, 4))
-        ctk.CTkLabel(logo, text=" MacCleaner Pro",
+        ctk.CTkLabel(logo, text=" Broomstick",
                      font=(FONT_FAMILY, 17, "bold"),
                      text_color=C["text"]).pack(side="left", pady=(4, 0))
 

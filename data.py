@@ -1,4 +1,4 @@
-"""Datenfunktionen für MacCleaner — Scans, Listen, Helpers.
+"""Datenfunktionen für Broomstick — Scans, Listen, Helpers.
 
 Hier liegt die ganze Logik, die das Dateisystem / System abfragt.
 Die UI in app.py importiert von hier.
