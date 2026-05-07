@@ -245,3 +245,62 @@ def make_icon(parent, name, size=24, color="#7c5cff", bg_color="#0e1024", **kw):
     """Convenience-Wrapper: stellt Font-Registrierung sicher und erzeugt Icon."""
     _ensure_registered()
     return Icon(parent, name, size=size, color=color, bg_color=bg_color, **kw)
+
+
+# ─────────────────────────────────────────────────────────────────────
+#  Klickbarer Icon-Button (z.B. für Refresh)
+# ─────────────────────────────────────────────────────────────────────
+
+class IconButton(ctk.CTkFrame):
+    """Quadratischer Button, der nur ein Icon zeigt. Hovert mit Hintergrund.
+
+    Args:
+        master: Parent
+        name: Icon-Key
+        command: Callback bei Klick
+        size: Frame-Größe in px (Icon ist size*0.55)
+        color: Icon-Farbe
+        bg_color: Hintergrund der Umgebung (für Duotone-Mix)
+        hover_color: Farbe beim Hover
+    """
+
+    def __init__(
+        self,
+        master,
+        name: str,
+        command,
+        size: int = 36,
+        color: str = "#9ca3c4",
+        bg_color: str = "#0e1024",
+        hover_color: str = "#232651",
+        **kwargs,
+    ):
+        super().__init__(
+            master, fg_color="transparent",
+            corner_radius=8, width=size, height=size,
+            cursor="pointinghand", **kwargs,
+        )
+        self.pack_propagate(False)
+        self.grid_propagate(False)
+        self._command = command
+        self._bg_color = bg_color
+        self._hover_color = hover_color
+        self._icon_color = color
+
+        icon_size = int(size * 0.55)
+        self.icon = make_icon(self, name, size=icon_size,
+                                color=color, bg_color=bg_color)
+        self.icon.place(relx=0.5, rely=0.5, anchor="center")
+
+        for w in (self, self.icon, self.icon.bg_lbl, self.icon.fg_lbl):
+            w.bind("<Button-1>", lambda e: self._command())
+            w.bind("<Enter>", self._hover_in)
+            w.bind("<Leave>", self._hover_out)
+
+    def _hover_in(self, _):
+        self.configure(fg_color=self._hover_color)
+        self.icon.set_color(self._icon_color, self._hover_color)
+
+    def _hover_out(self, _):
+        self.configure(fg_color="transparent")
+        self.icon.set_color(self._icon_color, self._bg_color)

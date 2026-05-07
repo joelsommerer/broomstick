@@ -8,11 +8,14 @@ import subprocess
 import threading
 from pathlib import Path
 
+import logging
 import tkinter as tk
 from tkinter import ttk, messagebox
 import customtkinter as ctk
 
-from icons import make_icon, register_fonts
+from icons import make_icon, register_fonts, IconButton
+import titlebar
+import logger as app_logger
 
 from data import (
     HOME,
@@ -261,11 +264,21 @@ class OverviewPage(ctk.CTkFrame):
 
     def _build(self):
         # Header
-        ctk.CTkLabel(self, text="Übersicht", font=(FONT_FAMILY, 26, "bold"),
-                     text_color=C["text"]).pack(anchor="w", padx=32, pady=(28, 4))
-        ctk.CTkLabel(self, text="Speicherplatz, Junk-Files und Quick-Actions auf einen Blick.",
+        head = ctk.CTkFrame(self, fg_color="transparent")
+        head.pack(fill="x", padx=32, pady=(48, 4))
+        head.grid_columnconfigure(0, weight=1)
+        title_box = ctk.CTkFrame(head, fg_color="transparent")
+        title_box.grid(row=0, column=0, sticky="w")
+        ctk.CTkLabel(title_box, text="Übersicht", font=(FONT_FAMILY, 26, "bold"),
+                     text_color=C["text"]).pack(anchor="w")
+        ctk.CTkLabel(title_box, text="Speicherplatz, Junk-Files und Quick-Actions auf einen Blick.",
                      font=(FONT_FAMILY, 13), text_color=C["text_dim"]
-                     ).pack(anchor="w", padx=32, pady=(0, 18))
+                     ).pack(anchor="w")
+        IconButton(head, "refresh", self.refresh, size=36,
+                    color=C["text_dim"], bg_color=C["bg"],
+                    hover_color=C["card_hover"]).grid(row=0, column=1, sticky="e", padx=(0, 0))
+        # Spacer
+        ctk.CTkFrame(self, fg_color="transparent", height=14).pack(fill="x")
 
         # Disk-Karte
         disk_card = ctk.CTkFrame(self, fg_color=C["card"], corner_radius=14)
@@ -544,7 +557,7 @@ class CleanUpPage(ctk.CTkFrame):
     def _build(self):
         # Header
         head = ctk.CTkFrame(self, fg_color="transparent")
-        head.pack(fill="x", padx=32, pady=(28, 4))
+        head.pack(fill="x", padx=32, pady=(48, 4))
         make_icon(head, "cleanup", size=34,
                    color=C["accent"], bg_color=C["bg"]).pack(side="left", padx=(0, 4))
         title_box = ctk.CTkFrame(head, fg_color="transparent")
@@ -553,6 +566,9 @@ class CleanUpPage(ctk.CTkFrame):
                      text_color=C["text"]).pack(anchor="w")
         ctk.CTkLabel(title_box, text="Caches, Downloads, Screenshots, Mails, Papierkorb …",
                      font=(FONT_FAMILY, 13), text_color=C["text_dim"]).pack(anchor="w")
+        IconButton(head, "refresh", self.scan_all, size=36,
+                    color=C["text_dim"], bg_color=C["bg"],
+                    hover_color=C["card_hover"]).pack(side="right")
 
         # Body: zwei Spalten
         body = ctk.CTkFrame(self, fg_color="transparent")
@@ -787,7 +803,7 @@ class SpeedUpPage(ctk.CTkFrame):
 
     def _build(self):
         head = ctk.CTkFrame(self, fg_color="transparent")
-        head.pack(fill="x", padx=32, pady=(28, 4))
+        head.pack(fill="x", padx=32, pady=(48, 4))
         make_icon(head, "speedup", size=34,
                    color=C["accent"], bg_color=C["bg"]).pack(side="left", padx=(0, 4))
         title_box = ctk.CTkFrame(head, fg_color="transparent")
@@ -796,6 +812,9 @@ class SpeedUpPage(ctk.CTkFrame):
                      text_color=C["text"]).pack(anchor="w")
         ctk.CTkLabel(title_box, text="Programme verwalten und Mac beschleunigen",
                      font=(FONT_FAMILY, 13), text_color=C["text_dim"]).pack(anchor="w")
+        IconButton(head, "refresh", self.scan_all, size=36,
+                    color=C["text_dim"], bg_color=C["bg"],
+                    hover_color=C["card_hover"]).pack(side="right")
 
         body = ctk.CTkFrame(self, fg_color="transparent")
         body.pack(fill="both", expand=True, padx=32, pady=(20, 14))
@@ -986,7 +1005,7 @@ class ManageFilesPage(ctk.CTkFrame):
 
     def _build(self):
         head = ctk.CTkFrame(self, fg_color="transparent")
-        head.pack(fill="x", padx=32, pady=(28, 4))
+        head.pack(fill="x", padx=32, pady=(48, 4))
         make_icon(head, "manage", size=34,
                    color=C["accent"], bg_color=C["bg"]).pack(side="left", padx=(0, 4))
         title_box = ctk.CTkFrame(head, fg_color="transparent")
@@ -996,6 +1015,9 @@ class ManageFilesPage(ctk.CTkFrame):
         ctk.CTkLabel(title_box,
                       text="Dateien die viel Platz belegen anzeigen und löschen.",
                       font=(FONT_FAMILY, 13), text_color=C["text_dim"]).pack(anchor="w")
+        IconButton(head, "refresh", self.scan_all, size=36,
+                    color=C["text_dim"], bg_color=C["bg"],
+                    hover_color=C["card_hover"]).pack(side="right")
 
         body = ctk.CTkFrame(self, fg_color="transparent")
         body.pack(fill="both", expand=True, padx=32, pady=(20, 14))
@@ -1155,7 +1177,7 @@ class DuplicatesPage(ctk.CTkFrame):
 
     def _build(self):
         head = ctk.CTkFrame(self, fg_color="transparent")
-        head.pack(fill="x", padx=32, pady=(28, 4))
+        head.pack(fill="x", padx=32, pady=(48, 4))
         make_icon(head, "duplicates", size=34,
                    color=C["accent"], bg_color=C["bg"]).pack(side="left", padx=(0, 4))
         title_box = ctk.CTkFrame(head, fg_color="transparent")
@@ -1291,7 +1313,7 @@ class ApplicationsPage(ctk.CTkFrame):
 
     def _build(self):
         head = ctk.CTkFrame(self, fg_color="transparent")
-        head.pack(fill="x", padx=32, pady=(28, 4))
+        head.pack(fill="x", padx=32, pady=(48, 4))
         make_icon(head, "applications", size=34,
                    color=C["accent"], bg_color=C["bg"]).pack(side="left", padx=(0, 4))
         title_box = ctk.CTkFrame(head, fg_color="transparent")
@@ -1300,6 +1322,9 @@ class ApplicationsPage(ctk.CTkFrame):
                      text_color=C["text"]).pack(anchor="w")
         ctk.CTkLabel(title_box, text="App + Reste sauber deinstallieren",
                      font=(FONT_FAMILY, 13), text_color=C["text_dim"]).pack(anchor="w")
+        IconButton(head, "refresh", self.reload_apps, size=36,
+                    color=C["text_dim"], bg_color=C["bg"],
+                    hover_color=C["card_hover"]).pack(side="right")
 
         top = ctk.CTkFrame(self, fg_color="transparent")
         top.pack(fill="x", padx=32, pady=(20, 14))
@@ -1566,7 +1591,7 @@ class BiggestFilesPage(ctk.CTkFrame):
 
     def _build(self):
         head = ctk.CTkFrame(self, fg_color="transparent")
-        head.pack(fill="x", padx=32, pady=(28, 4))
+        head.pack(fill="x", padx=32, pady=(48, 4))
         make_icon(head, "biggest", size=34,
                    color=C["accent"], bg_color=C["bg"]).pack(side="left", padx=(0, 4))
         title_box = ctk.CTkFrame(head, fg_color="transparent")
@@ -1708,6 +1733,8 @@ class BiggestFilesPage(ctk.CTkFrame):
 # ─────────────────────────────────────────────────────────────────────
 
 UTILITIES = [
+    ("console", "Logs anzeigen", "broomstick.log in der Konsole öffnen",
+     lambda: subprocess.run(["open", "-a", "Console", str(app_logger.log_path())])),
     ("activity", "Activity Monitor", "Prozesse und Ressourcen-Verbrauch",
      lambda: subprocess.run(["open", "-a", "Activity Monitor"])),
     ("disk", "Disk Utility", "Festplatten-Verwaltung und Reparatur",
@@ -1738,7 +1765,7 @@ class UtilitiesPage(ctk.CTkFrame):
 
     def _build(self):
         head = ctk.CTkFrame(self, fg_color="transparent")
-        head.pack(fill="x", padx=32, pady=(28, 4))
+        head.pack(fill="x", padx=32, pady=(48, 4))
         make_icon(head, "utilities", size=34,
                    color=C["accent"], bg_color=C["bg"]).pack(side="left", padx=(0, 4))
         title_box = ctk.CTkFrame(head, fg_color="transparent")
@@ -1789,6 +1816,12 @@ class App(ctk.CTk):
 
         style_ttk_widgets(self)
 
+        # macOS-Titelleiste transparent machen — Content scheint dadurch.
+        try:
+            titlebar.integrate(self)
+        except Exception:
+            logging.exception("Titelleiste-Integration fehlgeschlagen")
+
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
@@ -1798,9 +1831,10 @@ class App(ctk.CTk):
         self.sidebar.grid(row=0, column=0, sticky="nsew")
         self.sidebar.grid_propagate(False)
 
-        # Logo
+        # Logo (mit zusätzlichem Top-Spacing, damit es nicht unter den
+        # macOS-Window-Buttons sitzt — die Titelleiste ist transparent)
         logo = ctk.CTkFrame(self.sidebar, fg_color="transparent", height=70)
-        logo.pack(fill="x", padx=20, pady=(28, 10))
+        logo.pack(fill="x", padx=20, pady=(48, 10))
         logo.pack_propagate(False)
         make_icon(logo, "logo", size=28,
                    color=C["accent"], bg_color=C["sidebar"]).pack(side="left", padx=(0, 4))
@@ -1881,5 +1915,10 @@ class App(ctk.CTk):
 
 
 if __name__ == "__main__":
+    app_logger.setup_logging()
     register_fonts()
-    App().mainloop()
+    try:
+        App().mainloop()
+    except Exception:
+        logging.exception("App-Mainloop-Crash")
+        raise

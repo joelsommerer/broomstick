@@ -30,8 +30,8 @@ OPTIONS = {
         "CFBundleName": "Broomstick",
         "CFBundleDisplayName": "Broomstick for Mac",
         "CFBundleIdentifier": "com.broomstick.app",
-        "CFBundleVersion": "0.1.3",
-        "CFBundleShortVersionString": "0.1.3",
+        "CFBundleVersion": "0.1.4",
+        "CFBundleShortVersionString": "0.1.4",
         "CFBundleExecutable": "Broomstick",
         "LSMinimumSystemVersion": "11.0",
         "NSHighResolutionCapable": True,
@@ -41,8 +41,8 @@ OPTIONS = {
         "NSAppleEventsUsageDescription":
             "Broomstick needs to control Finder to move items to the Trash.",
     },
-    "packages": ["customtkinter"],
-    "includes": ["tkinter", "data", "icons"],
+    "packages": ["customtkinter", "objc", "Foundation", "AppKit"],
+    "includes": ["tkinter", "data", "icons", "logger", "titlebar"],
     "excludes": ["matplotlib", "numpy", "scipy", "pandas", "PyQt5", "PyQt6", "PySide6"],
     "optimize": 2,
 }

@@ -1,2 +1,3 @@
 # Runtime dependencies
 customtkinter>=5.2.0
+pyobjc-framework-Cocoa>=10.0  # transparente macOS-Titelleiste
