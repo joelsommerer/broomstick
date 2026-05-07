@@ -21,6 +21,9 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Install create-dmg
+        run: brew install create-dmg
+
       - name: Install build dependencies
         run: |
           python -m venv .venv
