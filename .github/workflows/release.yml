@@ -1,0 +1,57 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:  # manuell auslösbar
+
+jobs:
+  build:
+    runs-on: macos-14  # Apple Silicon Runner
+    permissions:
+      contents: write   # für gh release create
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install build dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -r requirements-dev.txt
+
+      - name: Generate app icon
+        run: .venv/bin/python scripts/make_icon.py
+
+      - name: Build .app bundle
+        run: ./scripts/build_app.sh
+
+      - name: Build DMG
+        run: ./scripts/build_dmg.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: broomstick-${{ github.ref_name }}
+          path: |
+            dist/Broomstick.app
+            dist/Broomstick-*.dmg
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            dist/Broomstick-*.dmg \
+            --title "${{ github.ref_name }}" \
+            --notes "Auto-built release from tag ${{ github.ref_name }}.
+
+          ⚠️  This build is **not notarized** — see README for the right-click → Open workaround on first launch."

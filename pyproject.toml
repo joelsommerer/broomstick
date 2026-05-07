@@ -1,0 +1,12 @@
+# Project metadata is kept here for tools that read pyproject.toml.
+# Build configuration (py2app) lives in setup.py — py2app doesn't support
+# PEP 621 dependencies, so they are declared in setup.py only.
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.broomstick]
+version = "0.1.0"
+homepage = "https://github.com/joelsommerer/broomstick"
+license = "Apache-2.0"

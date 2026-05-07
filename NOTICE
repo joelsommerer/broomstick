@@ -1,0 +1,41 @@
+Broomstick for Mac
+Copyright 2026 Joel Sommerer
+
+This product includes software developed by Joel Sommerer.
+
+Licensed under the Apache License, Version 2.0 (the "License").
+See LICENSE for details.
+
+This product bundles the following third-party assets and libraries,
+each under their own license:
+
+──────────────────────────────────────────────────────────────────────
+Phosphor Icons (MIT License)
+https://github.com/phosphor-icons/web
+──────────────────────────────────────────────────────────────────────
+
+Copyright (c) 2023 Phosphor Icons
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction.
+
+The font files Phosphor-Duotone.ttf and Phosphor-Fill.ttf are bundled in
+assets/ and used unmodified.
+
+──────────────────────────────────────────────────────────────────────
+CustomTkinter (MIT License)
+https://github.com/TomSchimansky/CustomTkinter
+──────────────────────────────────────────────────────────────────────
+
+Copyright (c) 2023 Tom Schimansky
+
+──────────────────────────────────────────────────────────────────────
+Trademarks
+──────────────────────────────────────────────────────────────────────
+
+"Mac" and "macOS" are registered trademarks of Apple Inc. in the United
+States and other countries. Their use in this project's name and
+documentation is purely descriptive (indicating the operating system
+Broomstick runs on) and does not imply endorsement by or affiliation
+with Apple Inc.

@@ -1,0 +1,5 @@
+# Development & build dependencies (also installs runtime deps)
+-r requirements.txt
+
+py2app>=0.28
+Pillow>=10.0  # für App-Icon-Generierung
